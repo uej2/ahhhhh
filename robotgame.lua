@@ -1,4 +1,4 @@
--- claude.ai frfr 😱
+-- claude.ai made ts
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -282,6 +282,21 @@ CombatGroup:AddToggle("HitboxExtender", {
 		end
 	end,
 })
+
+if string.split(identifyexecutor() or "None", " ")[1] ~= "Xeno" then
+CombatGroup:AddToggle("KillAura", {
+	Text = "Kill Aura (Hit First)",
+	Tooltip = "Spams attack after first hit",
+	Default = false,
+	Callback = function(Value)
+		killAuraEnabled = Value
+		if not Value and killAuraCoroutine then
+			task.cancel(killAuraCoroutine)
+			killAuraCoroutine = nil
+		end
+	end,
+})
+end
 
 local MenuGroup = Tabs["UI Settings"]:AddLeftGroupbox("Menu", "wrench")
 
