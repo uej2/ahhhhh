@@ -1,4 +1,4 @@
--- claude.ai made ts
+-- made with claude.ai 😇
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
