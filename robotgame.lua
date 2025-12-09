@@ -1,4 +1,4 @@
--- AI GENERATED CODE XDXDXD
+-- claude.ai frfr 😱
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -6,12 +6,14 @@ local RepStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
 
 local infiniteStaminaEnabled = false
+local killAuraEnabled = false
 local hitboxExtenderEnabled = false
 local hitboxSize = 15
 local visualHitboxEnabled = false
 local visualHitboxSize = 15
 local oneHitEnabled = false
 
+-- ========== LOAD OBSIDIAN LIBRARY ==========
 local repo = "https://raw.githubusercontent.com/deividcomsono/Obsidian/main/"
 local Library = loadstring(game:HttpGet(repo .. "Library.lua"))()
 local ThemeManager = loadstring(game:HttpGet(repo .. "addons/ThemeManager.lua"))()
@@ -32,6 +34,7 @@ local Tabs = {
 	["UI Settings"] = Window:AddTab("UI Settings", "settings"),
 }
 
+-- ========== VISUAL HITBOX EXTENDER ==========
 local visualHitboxParts = {}
 
 local function clearVisualHitboxes()
@@ -121,6 +124,7 @@ HitboxModule.Start = function(self, character, side)
 end
 end
 
+-- ========== ONE HIT ==========
 local input = require(RepStorage:WaitForChild("RobotInput"))
 local origGetConfig = input.GetConfigForBot
 
@@ -152,6 +156,7 @@ input.GetConfigForBot = function(bot)
 	return cfg
 end
 
+-- ========== INFINITE STAMINA ==========
 local function setupInfinitePower(char)
 	if not char then return end
 	
@@ -205,6 +210,45 @@ LocalPlayer.CharacterAdded:Connect(function(char)
 	setupInfinitePower(char)
 end)
 
+if string.split(identifyexecutor() or "None", " ")[1] ~= "Xeno" then
+-- ========== KILL AURA (CONSTANT SPAM) ==========
+local killAuraActive = false
+
+local oldNamecall
+oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+	local method = getnamecallmethod()
+	local args = {...}
+	
+	if method == "FireServer" and self.Name == "HitReport" and killAuraEnabled and not killAuraActive then
+		killAuraActive = true
+		
+		task.spawn(function()
+			while killAuraEnabled do
+				pcall(function()
+					RepStorage.Remotes.HitReport:FireServer(unpack(args))
+				end)
+				task.wait(0.05)
+			end
+			killAuraActive = false
+		end)
+	end
+	
+	if method == "FireServer" and infiniteStaminaEnabled then
+		local remoteName = self.Name:lower()
+		if remoteName:find("power") or remoteName:find("charge") or remoteName:find("drain") or remoteName:find("stamina") then
+			for _, arg in pairs(args) do
+				if type(arg) == "number" and arg < 100 then
+					return
+				end
+			end
+		end
+	end
+	
+	return oldNamecall(self, ...)
+end)
+end
+
+-- ========== UI ==========
 local PlayerGroup = Tabs.Main:AddLeftGroupbox("Player", "user")
 
 PlayerGroup:AddToggle("InfiniteStamina", {
